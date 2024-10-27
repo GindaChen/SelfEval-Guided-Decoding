@@ -2,8 +2,14 @@
 
 set -x
 
-split=test
-dtname=strategyqa
+export dtname=strategyqa
+export split=test
+export ROOT=/pscratch/sd/j/jundac/project/SelfEval-Guided-Decoding
+export EXEHOME=${ROOT}/src
+export DATAHOME=${ROOT}/data
+export OUTPUTHOME=${ROOT}/outputs/${dtname}/${split}_outputs
+
+module load cudatoolkit/12.4
 
 mkdir -p ${OUTPUTHOME}
 

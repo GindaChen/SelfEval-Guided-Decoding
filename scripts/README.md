@@ -3,9 +3,12 @@
 Before running, please define `EXEHOME`, `OUTPUTHOME`, and `DATAHOME` accordingly in the script.
 - _e.g._,
     ```sh
-    EXEHOME=/home/username/SelfEval-Guided-Decoding/src
-    DATAHOME=/home/username/SelfEval-Guided-Decoding/data
-    OUTPUTHOME=/home/username/SelfEval-Guided-Decoding/outputs/${dtname}/${split}_outputs
+    export dtname=gsm8k
+    export split=test
+    export ROOT=/pscratch/sd/j/jundac/project/SelfEval-Guided-Decoding
+    export EXEHOME=${ROOT}/src
+    export DATAHOME=${ROOT}/data
+    export OUTPUTHOME=${ROOT}/outputs/${dtname}/${split}_outputs
     ```
 
 We provide three types of example scripts as follows: (1) baseline running; (2) ours running; (3) LLM evaluating.

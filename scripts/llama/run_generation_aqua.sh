@@ -2,6 +2,13 @@
 
 set -x
 
+# export dtname=aqua
+# export split=test
+# export ROOT=/pscratch/sd/j/jundac/project/SelfEval-Guided-Decoding
+# export EXEHOME=${ROOT}/src
+# export DATAHOME=${ROOT}/data
+# export OUTPUTHOME=${ROOT}/outputs/${dtname}/${split}_outputs
+
 split=test
 dtname=aqua
 
