@@ -54,7 +54,7 @@ def parse_args():
     
     return args
 
-
+KEYS=["sk-proj-1234567890",]
 def get_code_confidence(args, example, key=KEYS):
     _, prefix = get_prompt_inputs(args.dt_name, args.prompts, example)
     

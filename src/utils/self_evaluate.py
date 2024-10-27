@@ -8,14 +8,18 @@ from tenacity import wait_random_exponential, stop_after_attempt, retry
 from .tool import select_key, extract_confidence_score, ERRORS
 
 
-@retry(wait=wait_random_exponential(min=5, max=1000), stop=stop_after_attempt(128))
+# @retry(wait=wait_random_exponential(min=5, max=1000), stop=stop_after_attempt(128))
 def _evaluate_code(args, prefix, suffix=None, max_tokens=64, temperature=0.0, 
                    top_p=1, n=1, logprobs=5, key=[]):
     st = time()
-    rst = openai.Completion.create(
-        engine='code-davinci-002',
+    # TODO: (Hack) Use local API server
+    client = openai.Client(
+        base_url="http://127.0.0.1:30000/v1/",
+        api_key="sk-proj-1234567890",
+    )
+    rst = client.completions.create(
+        model="default",
         prompt=prefix,
-        api_key=select_key(args.keys_used, key, all_keys=args.keys),
         max_tokens=max_tokens,
         temperature=temperature,
         top_p=top_p,
@@ -23,6 +27,18 @@ def _evaluate_code(args, prefix, suffix=None, max_tokens=64, temperature=0.0,
         stop=['\n'],
         logprobs=logprobs,
     )
+
+    # rst = openai.Completion.create(
+    #     engine='code-davinci-002',
+    #     prompt=prefix,
+    #     api_key=select_key(args.keys_used, key, all_keys=args.keys),
+    #     max_tokens=max_tokens,
+    #     temperature=temperature,
+    #     top_p=top_p,
+    #     n=n,
+    #     stop=['\n'],
+    #     logprobs=logprobs,
+    # )
     dur = time() - st
     if args.verbal: print(f'@self_evaluate_code: {dur} seconds')
     return rst
@@ -48,7 +64,7 @@ def openai_prompt_eval_once(args, prefix, suffix=None, max_tokens=64, temperatur
     sleep_time = to_wait - int(dur) if dur < to_wait - min_to_wait \
         else random.uniform(min_to_wait, max(min_to_wait + 1, args.sleep_time))
     if args.verbal: print(f'@self-evaluation: {cost} seconds (+ sleep {sleep_time} seconds)')
-    sleep(sleep_time)
+    # sleep(sleep_time)
         
     return result
 

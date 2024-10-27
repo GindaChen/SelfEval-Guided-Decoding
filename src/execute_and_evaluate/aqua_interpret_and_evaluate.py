@@ -18,23 +18,44 @@ def check_eq(p, g):
     return p == g
 
 
-@retry(wait=wait_random_exponential(min=5, max=10000), stop=stop_after_attempt(256))
+# @retry(wait=wait_random_exponential(min=5, max=10000), stop=stop_after_attempt(256))
 def make_choice(prompt, keys, chatgpt=False):
+    client = openai.Client(
+        base_url="http://127.0.0.1:30000/v1/",
+        api_key="sk-proj-1234567890",
+    )
     if chatgpt:
-        return openai.ChatCompletion.create(
-            model='gpt-3.5-turbo',
+        # return openai.ChatCompletion.create(
+        #     model='gpt-3.5-turbo',
+        #     messages=prompt,
+        #     api_key=select_key(KEYS_USED, keys, all_keys=KEYS),
+        #     max_tokens=8,
+        #     temperature=0.0,
+        #     n=1,
+        #     stop=['\n'],
+        # )
+        return openai.chat.completions.create(
+            model='default',
             messages=prompt,
-            api_key=select_key(KEYS_USED, keys, all_keys=KEYS),
+            # api_key=select_key(KEYS_USED, keys, all_keys=KEYS),
             max_tokens=8,
             temperature=0.0,
             n=1,
             stop=['\n'],
         )
     else:
-        return openai.Completion.create(
-            engine='code-davinci-002',
+        # return openai.Completion.create(
+        #     engine='code-davinci-002',
+        #     prompt=prompt,
+        #     api_key=select_key(KEYS_USED, keys, all_keys=KEYS),
+        #     max_tokens=8,
+        #     temperature=0.0,
+        #     n=1,
+        #     stop=['\n'],
+        # )
+        return openai.chat.completions.create(
+            model='default',
             prompt=prompt,
-            api_key=select_key(KEYS_USED, keys, all_keys=KEYS),
             max_tokens=8,
             temperature=0.0,
             n=1,

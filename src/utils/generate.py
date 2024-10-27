@@ -6,41 +6,63 @@ from tenacity import wait_random_exponential, stop_after_attempt, retry
 from .tool import select_key, ERRORS
 
 
-@retry(wait=wait_random_exponential(min=5, max=1000), stop=stop_after_attempt(128))
+def patch_completions__getitem__():
+    openai.Completion.__getitem__ = lambda self, item: self.__dict__[item]
+    openai.types.completion.Completion.__getitem__ = lambda self, item: self.__dict__[item]
+
+patch_completions__getitem__()
+
+# @retry(wait=wait_random_exponential(min=5, max=1000), stop=stop_after_attempt(128))
 def _generate_code(args, prompt, max_tokens=256, temperature=0.0, 
                    top_p=1, n=1, logprobs=1, key=[]):
     st = time()
-    if args.chatgpt:
-        rst = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=prompt,
-            api_key=select_key(args.keys_used, key, all_keys=args.keys),
-            max_tokens=max_tokens,
-            temperature=temperature,
-            top_p=top_p,
-            n=n,
-            stop=['\n\n\n'],
-            # logprobs=logprobs,
-        )
-    else:
-        rst = openai.Completion.create(
-            engine='code-davinci-002',
-            prompt=prompt,
-            api_key=select_key(args.keys_used, key, all_keys=args.keys),
-            max_tokens=max_tokens,
-            temperature=temperature,
-            top_p=top_p,
-            n=n,
-            stop=['\n\n\n'],
-            logprobs=logprobs,
-        )
+    client = openai.Client(
+        base_url="http://127.0.0.1:30000/v1/",
+        api_key="sk-proj-1234567890",
+    )
+    rst = client.completions.create(
+        model='default',
+        prompt=prompt,
+        # api_key="default",
+        max_tokens=max_tokens,
+        temperature=temperature,
+        top_p=top_p,
+        n=n,
+        stop=['\n\n\n'],
+        logprobs=logprobs,
+    )
+
+    # if args.chatgpt:
+    #     rst = openai.ChatCompletion.create(
+    #         model="gpt-3.5-turbo",
+    #         messages=prompt,
+    #         api_key=select_key(args.keys_used, key, all_keys=args.keys),
+    #         max_tokens=max_tokens,
+    #         temperature=temperature,
+    #         top_p=top_p,
+    #         n=n,
+    #         stop=['\n\n\n'],
+    #         # logprobs=logprobs,
+    #     )
+    # else:
+    #     rst = openai.Completion.create(
+    #         engine='code-davinci-002',
+    #         prompt=prompt,
+    #         api_key=select_key(args.keys_used, key, all_keys=args.keys),
+    #         max_tokens=max_tokens,
+    #         temperature=temperature,
+    #         top_p=top_p,
+    #         n=n,
+    #         stop=['\n\n\n'],
+    #         logprobs=logprobs,
+    #     )
     dur = time() - st
     if args.verbal: print(f'@_generate_code: {dur} seconds')
     return rst
 
 
 def openai_prompt_once(args, prompt, max_tokens=256, temperature=0.0, top_p=1, n=1, logprobs=1, 
-                       key=[], min_to_wait=3, max_to_wait=10):
+                       key=[], min_to_wait=0, max_to_wait=10):
     start_time = time()
     result, cost = None, args.sleep_time
     
