@@ -7,6 +7,10 @@ from tenacity import wait_random_exponential, stop_after_attempt, retry
 
 from .tool import select_key, extract_confidence_score, ERRORS
 
+import os
+
+CLIENT_BASE_URL = os.environ.get("CLIENT_BASE_URL", "http://127.0.0.1:30000/v1/")
+CLIENT_API_KEY = os.environ.get("CLIENT_API_KEY", "sk-proj-1234567890")
 
 # @retry(wait=wait_random_exponential(min=5, max=1000), stop=stop_after_attempt(128))
 def _evaluate_code(args, prefix, suffix=None, max_tokens=64, temperature=0.0, 
@@ -14,8 +18,8 @@ def _evaluate_code(args, prefix, suffix=None, max_tokens=64, temperature=0.0,
     st = time()
     # TODO: (Hack) Use local API server
     client = openai.Client(
-        base_url="http://127.0.0.1:30000/v1/",
-        api_key="sk-proj-1234567890",
+        base_url=CLIENT_BASE_URL,
+        api_key=CLIENT_API_KEY,
     )
     rst = client.completions.create(
         model="default",

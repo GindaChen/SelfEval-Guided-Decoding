@@ -5,20 +5,18 @@ from tenacity import wait_random_exponential, stop_after_attempt, retry
 
 from .tool import select_key, ERRORS
 
+import os
 
-def patch_completions__getitem__():
-    openai.Completion.__getitem__ = lambda self, item: self.__dict__[item]
-    openai.types.completion.Completion.__getitem__ = lambda self, item: self.__dict__[item]
-
-patch_completions__getitem__()
+CLIENT_BASE_URL = os.environ.get("CLIENT_BASE_URL", "http://127.0.0.1:30000/v1/")
+CLIENT_API_KEY = os.environ.get("CLIENT_API_KEY", "sk-proj-1234567890")
 
 # @retry(wait=wait_random_exponential(min=5, max=1000), stop=stop_after_attempt(128))
 def _generate_code(args, prompt, max_tokens=256, temperature=0.0, 
                    top_p=1, n=1, logprobs=1, key=[]):
     st = time()
     client = openai.Client(
-        base_url="http://127.0.0.1:30000/v1/",
-        api_key="sk-proj-1234567890",
+        base_url=CLIENT_BASE_URL,
+        api_key=CLIENT_API_KEY,
     )
     rst = client.completions.create(
         model='default',
