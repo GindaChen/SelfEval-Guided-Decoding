@@ -16,7 +16,7 @@ echo "dtname: ${dtname}"
 echo "split: ${split}"
 echo "BEAM_SIZE: ${BEAM_SIZE}"
 
-module load cudatoolkit/12.4
-mamba activate ${ROOT}/env
+# module load cudatoolkit/12.4
+# mamba activate ${ROOT}/env
 
 bash ${ROOT}/scripts/llama/run_generation_gsm8k.sh
